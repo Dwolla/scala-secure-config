@@ -1,0 +1,26 @@
+language: scala
+
+scala:
+  - 2.11.12
+  - 2.12.6
+
+jdk: oraclejdk8
+
+env:
+  global:
+    - secure: "B1oBeluq8OqVG76u1n+iHFBQhmT/UrT91+2pTnJqO4tKfyaDzwbXdnI533QAwTdKP3nCD1m9TqMw8FqaxR7zNZw8mvBNuY5STmaGCnz2loZPKma/AHt5FgZAcDTyWYcPJKNicSdLVr5RTWbrLJTCvUF+5QwYTZv4zikpinqCF6tQg9y9LYgFCEc1wpA/L0djPZ77cE+CZZGfKm/55k6lragKpJmNJXPMhBrlOinZZlkJoJpH7bGApJ20qh0RlVOFL/iz5EKOuE2ZZpR74LLI+bHN/9KJIRkwwKWe5pbaRw8L06gjvvztdi2twCmbDAmduHG8wYmekZmys7fIDatjkAN9BJ11Lasl0jpZrStqI7cTgjkUHP+ovBe2PT0cyK5IJUMWF4PJWrJNLlC9XBxP1UEXPp9+mUa5xnozId8pf4w920sLm/lj3zFueolZpiRZC+QTqYFpIiUlnEn59r6M9aZLDSERXNCU5uakFWHvFkeoaA65Pdlt3am3X7aPh4MCBHlG1nGFwK/6OUaUgpPE0ZSfLdUnU/sCFKBp6NCfXTtR0ZOgOOuemujIa8wcllXF1hWQ5YdGLzYeTwoqjGHre234+xbHogL9Ug13z6q8Aljkk4xzDeJE+5yCWowtI7QClNolTzhVJSNUP4GcGjlrEhgYuEDz616ssYMPelydKWo="
+
+before_script:
+  - jdk_switcher use $JDK
+
+before_deploy:
+  - mkdir -p $HOME/.bintray
+  - openssl aes-256-cbc -K $encrypted_dffb0891b6af_key -iv $encrypted_dffb0891b6af_iv -in credentials.enc -out $HOME/.bintray/.credentials -d
+
+deploy:
+  - provider: script
+    script: .travis/release.sh
+    on:
+      branch: master
+      scala: 2.12.6
+      condition: $(git log -n1 --format=format:"%an") != "Dwolla Bot"
