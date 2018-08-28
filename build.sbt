@@ -87,7 +87,7 @@ lazy val `secure-config` = (project in file("."))
       ).map(_ % "0.9.1") ++
       Seq(
         "com.chuusai" %% "shapeless" % "2.3.3",
-        "com.dwolla" %% "fs2-aws" % "1.0.0",
+        "com.dwolla" %% "fs2-aws" % "1.0.1",
         "com.amazonaws" % "aws-java-sdk-kms" % "1.11.320",
       )
     },
