@@ -11,12 +11,13 @@ inThisBuild(List(
       url("https://dwolla.com")
     ),
   ),
-  crossScalaVersions := Seq("2.13.5", "2.12.13"),
+  crossScalaVersions := Seq("2.13.7", "2.12.15"),
   scalaVersion := crossScalaVersions.value.head,
   startYear := Option(2018),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
+  githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "doc"))),
   githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11"),
   githubWorkflowTargetTags ++= Seq("v*"),
   githubWorkflowPublishTargetBranches :=
@@ -39,10 +40,10 @@ lazy val `secure-config` = (project in file("."))
     libraryDependencies ++= {
       Seq(
         "com.github.pureconfig" %% "pureconfig-cats-effect",
-      ).map(_ % "0.14.1") ++
+      ).map(_ % "0.17.1") ++
       Seq(
-        "com.chuusai" %% "shapeless" % "2.3.3",
-        "com.dwolla" %% "fs2-aws-java-sdk2" % "2.0.0-M11",
+        "com.chuusai" %% "shapeless" % "2.3.7",
+        "com.dwolla" %% "fs2-aws-java-sdk2" % "3.0.0-RC1",
       )
     },
   )
