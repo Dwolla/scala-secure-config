@@ -18,7 +18,7 @@ inThisBuild(List(
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "doc"))),
-  githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11"),
+  githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11")),
   githubWorkflowTargetTags ++= Seq("v*"),
   githubWorkflowPublishTargetBranches :=
     Seq(RefPredicate.StartsWith(Ref.Tag("v"))),
