@@ -11,7 +11,7 @@ inThisBuild(List(
       url("https://dwolla.com")
     ),
   ),
-  crossScalaVersions := Seq("2.13.10", "2.12.17"),
+  crossScalaVersions := Seq("2.13.11", "2.12.17"),
   scalaVersion := crossScalaVersions.value.head,
   startYear := Option(2018),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
