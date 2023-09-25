@@ -24,7 +24,7 @@ lazy val `secure-config` = (project in file("."))
     libraryDependencies ++= {
       Seq(
         "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.4",
-        "com.chuusai" %% "shapeless" % "2.3.12",
+        "io.monix" %% "newtypes-core" % "0.3.0",
         "com.dwolla" %% "fs2-aws-java-sdk2" % "3.0.0-RC2",
       )
     },
