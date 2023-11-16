@@ -25,7 +25,14 @@ lazy val `secure-config` = (project in file("."))
       Seq(
         "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.4",
         "io.monix" %% "newtypes-core" % "0.3.0",
-        "com.dwolla" %% "fs2-aws-java-sdk2" % "3.0.0-RC2",
+        "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+        "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
+        "org.typelevel" %% "mouse" % "1.3.1",
       )
     },
+    smithy4sAwsSpecs ++= Seq(AWS.kms), // TODO can we put this into its own package to avoid clashing with generated code downstream?
+    scalacOptions += "-Wconf:src=src_managed/.*:s",
+  )
+  .enablePlugins(
+    Smithy4sCodegenPlugin,
   )
