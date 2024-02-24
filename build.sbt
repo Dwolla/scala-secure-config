@@ -14,7 +14,7 @@ inThisBuild(List(
   crossScalaVersions := Seq("2.13.10", "2.12.17"),
   scalaVersion := crossScalaVersions.value.head,
   startYear := Option(2018),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "doc"))),
