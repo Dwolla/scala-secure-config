@@ -14,3 +14,11 @@ pull_request_rules:
   - status-success=Build and Test (ubuntu-latest, 3, temurin@8)
   actions:
     merge: {}
+- name: Label smithy4s-preprocessors PRs
+  conditions:
+  - files~=^smithy4s-preprocessors/
+  actions:
+    label:
+      add:
+      - smithy4s-preprocessors
+      remove: []

@@ -19,6 +19,20 @@ ThisBuild / startYear := Option(2018)
 ThisBuild / tlBaseVersion := "0.4"
 ThisBuild / tlJdkRelease := Some(8)
 
+lazy val `smithy4s-preprocessors` = project
+  .in(file("smithy4s-preprocessors"))
+  .settings(
+    scalaVersion := "2.12.13", // 2.12 to match what SBT uses
+    scalacOptions -= "-source:future",
+    libraryDependencies ++= {
+      Seq(
+        "org.typelevel" %% "cats-core" % "2.10.0",
+        "software.amazon.smithy" % "smithy-build" % smithy4s.codegen.BuildInfo.smithyVersion,
+      )
+    },
+  )
+  .enablePlugins(NoPublishPlugin)
+
 lazy val `secure-config` = (project in file("."))
   .settings(
     libraryDependencies ++= {
@@ -30,8 +44,10 @@ lazy val `secure-config` = (project in file("."))
         "org.typelevel" %% "mouse" % "1.3.1",
       )
     },
-    smithy4sAwsSpecs ++= Seq(AWS.kms), // TODO can we put this into its own package to avoid clashing with generated code downstream?
+    smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
+    Compile / smithy4sModelTransformers += "com.dwolla.smithy.ShadeNamespace",
+    Compile / smithy4sAllDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
   )
   .enablePlugins(
     Smithy4sCodegenPlugin,
