@@ -2,7 +2,7 @@ package com.dwolla
 
 import cats.effect.*
 import cats.syntax.all.*
-import com.dwolla.smithy_shaded.com.amazonaws.kms.{CiphertextType, KMS}
+import com.dwolla.config.smithy_shaded.com.amazonaws.kms.{CiphertextType, KMS}
 import fs2.compression.Compression
 import monix.newtypes.NewtypeWrapped
 import mouse.all.*

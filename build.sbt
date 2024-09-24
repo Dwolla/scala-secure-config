@@ -22,7 +22,7 @@ ThisBuild / tlJdkRelease := Some(8)
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
   .settings(
-    scalaVersion := "2.12.13", // 2.12 to match what SBT uses
+    scalaVersion := "2.12.20", // 2.12 to match what SBT uses
     scalacOptions -= "-source:future",
     libraryDependencies ++= {
       Seq(
@@ -32,6 +32,22 @@ lazy val `smithy4s-preprocessors` = project
     },
   )
   .enablePlugins(NoPublishPlugin)
+
+// TODO add tests for this
+lazy val `scalafix-rules` = project.in(file("scalafix/rules"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.for3Use2_13,
+      "org.scalameta" %% "munit" % "1.0.0" % Test,
+      "com.eed3si9n.expecty" %% "expecty" % "0.16.0" % Test,
+    ),
+    scalacOptions ~= {
+      _.filterNot(_ == "-Xfatal-warnings")
+    },
+  )
+
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 lazy val `secure-config` = (project in file("."))
   .settings(
@@ -46,9 +62,13 @@ lazy val `secure-config` = (project in file("."))
     },
     smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
-    Compile / smithy4sModelTransformers += "com.dwolla.smithy.ShadeNamespace",
+    Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
     Compile / smithy4sAllDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
+    Compile / smithy4sSmithyLibrary := false,
+    Compile / scalafix / unmanagedSources := (Compile / sources).value,
+    scalafixOnCompile := true,
   )
   .enablePlugins(
     Smithy4sCodegenPlugin,
   )
+  .dependsOn(`scalafix-rules` % ScalafixConfig)
