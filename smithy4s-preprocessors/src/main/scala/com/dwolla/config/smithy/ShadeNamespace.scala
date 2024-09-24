@@ -1,27 +1,28 @@
 package com.dwolla.config.smithy
 
-import cats.syntax.all.*
+import software.amazon.smithy.build.transforms.FlattenNamespaces
 import software.amazon.smithy.build.{ProjectionTransformer, TransformContext}
 import software.amazon.smithy.model.Model
-import software.amazon.smithy.model.shapes.Shape
-
-import java.util.stream.Collectors
-import scala.collection.JavaConverters.*
+import software.amazon.smithy.model.node.ObjectNode
 
 class ShadeNamespace extends ProjectionTransformer {
   override def getName: String = "com.dwolla.config.smithy.ShadeNamespace"
 
-  private val namespacesToRename: Set[String] = Set("com.amazonaws.kms")
+  val sourceService: String = "TrentService"
+  val sourceNamespace: String = "com.amazonaws.kms"
+  val targetNamespacePrefix: String = "com.dwolla.config.smithy_shaded"
 
-  override def transform(context: TransformContext): Model = {
-    val renames =
-      context.getModel
-        .shapes().collect(Collectors.toList[Shape]).asScala.toList
-        .map(_.getId)
-        .filter(id => namespacesToRename.contains(id.getNamespace))
-        .fproduct(id => id.withNamespace(s"com.dwolla.config.smithy_shaded.${id.getNamespace}"))
-        .toMap.asJava
-
-    context.getTransformer.renameShapes(context.getModel, renames)
-  }
+  override def transform(context: TransformContext): Model =
+    new FlattenNamespaces().transform {
+      context
+        .toBuilder
+        .projectionName(getName)
+        .settings {
+          ObjectNode.builder()
+            .withMember("namespace", s"$targetNamespacePrefix.$sourceNamespace")
+            .withMember("service", s"$sourceNamespace#$sourceService")
+            .build()
+        }
+        .build()
+    }
 }
