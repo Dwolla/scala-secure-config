@@ -1,49 +1,78 @@
-inThisBuild(List(
-  organization := "com.dwolla",
-  description := "Adds support for decrypting values in TypeSafe Config files",
-  homepage := Some(url("https://github.com/Dwolla/scala-secure-config")),
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  developers := List(
-    Developer(
-      "bpholt",
-      "Brian Holt",
-      "bholt+github@dwolla.com",
-      url("https://dwolla.com")
-    ),
-  ),
-  crossScalaVersions := Seq("2.13.14", "2.12.20"),
-  scalaVersion := crossScalaVersions.value.head,
-  startYear := Option(2018),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+import org.typelevel.sbt.gha.WorkflowStep.Sbt
 
-  githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "doc"))),
-  githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11")),
-  githubWorkflowTargetTags ++= Seq("v*"),
-  githubWorkflowPublishTargetBranches :=
-    Seq(RefPredicate.StartsWith(Ref.Tag("v"))),
-  githubWorkflowPublish := Seq(
-    WorkflowStep.Sbt(
-      List("ci-release"),
-      env = Map(
-        "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
-        "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-        "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
-        "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
-      )
-    )
+ThisBuild / organization := "com.dwolla"
+ThisBuild / description := "Adds support for decrypting values in TypeSafe Config files"
+ThisBuild / homepage := Some(url("https://github.com/Dwolla/scala-secure-config"))
+ThisBuild / licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+ThisBuild / developers := List(
+  Developer(
+    "bpholt",
+    "Brian Holt",
+    "bholt+github@dwolla.com",
+    url("https://dwolla.com")
   ),
-))
+)
+ThisBuild / crossScalaVersions := Seq(
+  "2.13.14",
+  "3.3.3",
+)
+ThisBuild / scalaVersion := crossScalaVersions.value.head
+ThisBuild / startYear := Option(2018)
+ThisBuild / tlBaseVersion := "0.4"
+ThisBuild / tlJdkRelease := Some(8)
+ThisBuild / githubWorkflowBuild := List(Sbt(List("compile", "test")))
+
+lazy val `smithy4s-preprocessors` = project
+  .in(file("smithy4s-preprocessors"))
+  .settings(
+    scalaVersion := "2.12.20", // 2.12 to match what SBT uses
+    scalacOptions -= "-source:future",
+    libraryDependencies ++= {
+      Seq(
+        "org.typelevel" %% "cats-core" % "2.10.0",
+        "software.amazon.smithy" % "smithy-build" % smithy4s.codegen.BuildInfo.smithyVersion,
+      )
+    },
+  )
+  .enablePlugins(NoPublishPlugin)
+
+// TODO add tests for this
+lazy val `scalafix-rules` = project.in(file("scalafix/rules"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.for3Use2_13,
+      "org.scalameta" %% "munit" % "1.0.0" % Test,
+      "com.eed3si9n.expecty" %% "expecty" % "0.16.0" % Test,
+    ),
+    scalacOptions ~= {
+      _.filterNot(_ == "-Xfatal-warnings")
+    },
+  )
+
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 lazy val `secure-config` = (project in file("."))
   .settings(
     libraryDependencies ++= {
       Seq(
-        "com.github.pureconfig" %% "pureconfig-cats-effect",
-      ).map(_ % "0.17.1") ++
-      Seq(
-        "com.chuusai" %% "shapeless" % "2.3.12",
-        "com.dwolla" %% "fs2-aws-java-sdk2" % "3.0.0-RC2",
+        "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.4",
+        "io.monix" %% "newtypes-core" % "0.3.0",
+        "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+        "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
+        "org.typelevel" %% "mouse" % "1.3.1",
+        "org.scalameta" %% "munit" % "1.0.2" % Test,
       )
     },
+    smithy4sAwsSpecs ++= Seq(AWS.kms),
+    scalacOptions += "-Wconf:src=src_managed/.*:s",
+    Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
+    Compile / smithy4sAllDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
+    Compile / smithy4sSmithyLibrary := false,
+    Compile / scalafix / unmanagedSources := (Compile / sources).value,
+    scalafixOnCompile := true,
   )
+  .enablePlugins(
+    Smithy4sCodegenPlugin,
+  )
+  .dependsOn(`scalafix-rules` % ScalafixConfig)
