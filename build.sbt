@@ -1,3 +1,5 @@
+import org.typelevel.sbt.gha.WorkflowStep.Sbt
+
 ThisBuild / organization := "com.dwolla"
 ThisBuild / description := "Adds support for decrypting values in TypeSafe Config files"
 ThisBuild / homepage := Some(url("https://github.com/Dwolla/scala-secure-config"))
@@ -18,6 +20,7 @@ ThisBuild / scalaVersion := crossScalaVersions.value.head
 ThisBuild / startYear := Option(2018)
 ThisBuild / tlBaseVersion := "0.4"
 ThisBuild / tlJdkRelease := Some(8)
+ThisBuild / githubWorkflowBuild := List(Sbt(List("compile", "test")))
 
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
@@ -58,6 +61,7 @@ lazy val `secure-config` = (project in file("."))
         "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
         "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
         "org.typelevel" %% "mouse" % "1.3.1",
+        "org.scalameta" %% "munit" % "1.0.2" % Test,
       )
     },
     smithy4sAwsSpecs ++= Seq(AWS.kms),
