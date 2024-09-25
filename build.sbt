@@ -22,6 +22,7 @@ ThisBuild / tlBaseVersion := "0.4"
 ThisBuild / tlJdkRelease := Some(8)
 ThisBuild / githubWorkflowBuild := List(Sbt(List("compile", "test")))
 ThisBuild / tlCiReleaseBranches := Seq("main")
+ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeLegacy
 ThisBuild / mergifyStewardConfig ~= { _.map {
   _.withAuthor("dwolla-oss-scala-steward[bot]")
     .withMergeMinors(true)
