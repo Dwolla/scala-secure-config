@@ -23,6 +23,7 @@ ThisBuild / tlJdkRelease := Some(8)
 ThisBuild / githubWorkflowBuild := List(Sbt(List("compile", "test")))
 ThisBuild / tlCiReleaseBranches := Seq("main")
 ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeLegacy
+ThisBuild / mergifyRequiredJobs ++= Seq("validate-steward")
 ThisBuild / mergifyStewardConfig ~= { _.map {
   _.withAuthor("dwolla-oss-scala-steward[bot]")
     .withMergeMinors(true)
@@ -49,6 +50,9 @@ lazy val `scalafix-rules` = project.in(file("scalafix/rules"))
       "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.for3Use2_13,
       "org.scalameta" %% "munit" % "1.0.0" % Test,
       "com.eed3si9n.expecty" %% "expecty" % "0.16.0" % Test,
+    ),
+    dependencyOverrides ++= Seq(
+      "com.google.protobuf" % "protobuf-java" % "3.25.5", // CVE-2024-7254
     ),
     scalacOptions ~= {
       _.filterNot(_ == "-Xfatal-warnings")
