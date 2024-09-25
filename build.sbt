@@ -21,6 +21,7 @@ ThisBuild / startYear := Option(2018)
 ThisBuild / tlBaseVersion := "0.4"
 ThisBuild / tlJdkRelease := Some(8)
 ThisBuild / githubWorkflowBuild := List(Sbt(List("compile", "test")))
+ThisBuild / tlCiReleaseBranches := Seq("main")
 
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
