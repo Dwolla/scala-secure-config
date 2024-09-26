@@ -60,7 +60,7 @@ lazy val `scalafix-rules` = project.in(file("scalafix/rules"))
   .settings(
     libraryDependencies ++= Seq(
       "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.for3Use2_13,
-      "org.scalameta" %% "munit" % "1.0.0" % Test,
+      "org.scalameta" %% "munit" % "1.0.2" % Test,
       "com.eed3si9n.expecty" %% "expecty" % "0.16.0" % Test,
     ),
     dependencyOverrides ++= Seq(
