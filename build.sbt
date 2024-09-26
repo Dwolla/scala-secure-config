@@ -83,8 +83,10 @@ lazy val `secure-config` = (project in file("."))
         "io.monix" %% "newtypes-core" % "0.3.0",
         "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
         "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
+        "org.scodec" %% "scodec-bits" % "1.2.1",
         "org.typelevel" %% "mouse" % "1.3.2",
         "org.scalameta" %% "munit" % "1.0.2" % Test,
+        "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
       )
     },
     smithy4sAwsSpecs ++= Seq(AWS.kms),

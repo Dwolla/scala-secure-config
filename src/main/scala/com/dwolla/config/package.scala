@@ -7,8 +7,11 @@ import fs2.compression.Compression
 import monix.newtypes.NewtypeWrapped
 import mouse.all.*
 import pureconfig.ConfigReader
+import scodec.bits.ByteVector
 import smithy4s.Blob
 import smithy4s.aws.{AwsClient, AwsEnvironment}
+
+import scala.util.control.NoStackTrace
 
 package object config {
   private[this] val secureStringRegex = "^SECURE: (.+)".r
@@ -16,11 +19,16 @@ package object config {
   def SecureReader[F[_] : Async : Compression](awsEnv: AwsEnvironment[F]): Resource[F, ConfigReader[F[SecurableString]]] =
     AwsClient(KMS, awsEnv).map { kms =>
       ConfigReader[String].map {
-        case secureStringRegex(cryptotext) =>
-          kms.decrypt(CiphertextType(Blob(cryptotext.getBytes())))
-            .map(_.plaintext) // TODO does this need to be base64-decoded?
+        case secureStringRegex(ciphertext) =>
+          ByteVector.fromBase64(ciphertext)
+            .map(_.toArray)
+            .map(Blob(_))
+            .liftTo[F](InvalidCiphertextException(ciphertext))
+            .map(CiphertextType(_))
+            .flatMap(kms.decrypt(_))
+            .map(_.plaintext)
             .liftOptionT
-            .getOrRaise(new RuntimeException("boom")) // TODO convert to a better exception
+            .getOrRaise(UnexpectedMissingPlaintextResponseException)
             .map(_.value.toUTF8String)
             .map(SecurableString(_))
 
@@ -31,3 +39,13 @@ package object config {
   type SecurableString = SecurableString.Type
   object SecurableString extends NewtypeWrapped[String]
 }
+
+class InvalidCiphertextException(txt: String)
+  extends RuntimeException(s"The provided ciphertext $txt is invalid, probably because it is not base64 encoded")
+object InvalidCiphertextException {
+  def apply(txt: String): Throwable = new InvalidCiphertextException(txt)
+}
+
+object UnexpectedMissingPlaintextResponseException
+  extends RuntimeException("the KMS response was expected to contain a plaintext field, but it did not")
+    with NoStackTrace
