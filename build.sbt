@@ -71,6 +71,7 @@ lazy val `scalafix-rules` = project.in(file("scalafix/rules"))
       _.filterNot(_ == "-Xfatal-warnings")
     },
   )
+  .enablePlugins(NoPublishPlugin)
 
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
