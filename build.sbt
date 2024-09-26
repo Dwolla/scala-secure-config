@@ -49,7 +49,6 @@ lazy val `smithy4s-preprocessors` = project
     scalacOptions -= "-source:future",
     libraryDependencies ++= {
       Seq(
-        "org.typelevel" %% "cats-core" % "2.10.0",
         "software.amazon.smithy" % "smithy-build" % smithy4s.codegen.BuildInfo.smithyVersion,
       )
     },
