@@ -21,8 +21,9 @@ class ShadedGeneratedSmithySpec extends FunSuite {
     assertNoDiff(compileErrors("""assertEquals(com.dwolla.config.smithy_shaded.com.amazonaws.kms.KMS.id, smithy4s.ShapeId("com.dwolla.config.smithy_shaded.com.amazonaws.kms", "TrentService"))"""),
       """error:
         |value KMS in package com.dwolla.config.smithy_shaded.com².amazonaws.kms cannot be accessed as a member of com.dwolla.config.smithy_shaded.com².amazonaws.kms.type from class ShadedGeneratedSmithySpec.
+        |  private[config] value KMS can only be accessed from package com.dwolla.config in package com.dwolla.
         |
-        |where:    com  is a package
+        |where:    com  is a package in the empty package
         |          com² is a package in package com.dwolla.config.smithy_shaded
         |assertEquals(com.dwolla.config.smithy_shaded.com.amazonaws.kms.KMS.id, smithy4s.ShapeId("com.dwolla.config.smithy_shaded.com.amazonaws.kms", "TrentService"))
         |                                                              ^
