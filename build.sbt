@@ -53,6 +53,7 @@ lazy val `smithy4s-preprocessors` = project
         "software.amazon.smithy" % "smithy-build" % smithy4s.codegen.BuildInfo.smithyVersion,
       )
     },
+    version := tlBaseVersion.value, // this module is unpublished and a stable version helps smithy4s not regenerate code more often than needed
   )
   .enablePlugins(NoPublishPlugin)
 
