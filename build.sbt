@@ -92,7 +92,7 @@ lazy val `secure-config` = (project in file("."))
     smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
     Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
-    Compile / smithy4sAllDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
+    Compile / smithy4sInternalDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
     Compile / smithy4sSmithyLibrary := false,
     Compile / scalafix / unmanagedSources := (Compile / sources).value,
     scalafixOnCompile := true,
