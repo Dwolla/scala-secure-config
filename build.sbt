@@ -28,19 +28,6 @@ ThisBuild / mergifyStewardConfig ~= { _.map {
   _.withAuthor("dwolla-oss-scala-steward[bot]")
     .withMergeMinors(true)
 }}
-Global / tlCommandAliases := {
-  def forEachScalaVersion(l: String *): Seq[String] =
-    githubWorkflowScalaVersions.value.flatMap { v =>
-      s"++ $v" :: l.toList
-    }
-
-  val base = List("reload", "project /")
-
-  Map(
-    "tlRelease" -> (base ++ forEachScalaVersion("mimaReportBinaryIssues", "publish") ++ List("tlSonatypeBundleReleaseIfRelevant")),
-    "tlReleaseLocal" -> (base ++ forEachScalaVersion("compile", "publishLocal"))
-  )
-}
 
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
