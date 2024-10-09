@@ -28,19 +28,6 @@ ThisBuild / mergifyStewardConfig ~= { _.map {
   _.withAuthor("dwolla-oss-scala-steward[bot]")
     .withMergeMinors(true)
 }}
-Global / tlCommandAliases := {
-  def forEachScalaVersion(l: String *): Seq[String] =
-    githubWorkflowScalaVersions.value.flatMap { v =>
-      s"++ $v" :: l.toList
-    }
-
-  val base = List("reload", "project /")
-
-  Map(
-    "tlRelease" -> (base ++ forEachScalaVersion("mimaReportBinaryIssues", "publish") ++ List("tlSonatypeBundleReleaseIfRelevant")),
-    "tlReleaseLocal" -> (base ++ forEachScalaVersion("compile", "publishLocal"))
-  )
-}
 
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
@@ -53,6 +40,7 @@ lazy val `smithy4s-preprocessors` = project
         "software.amazon.smithy" % "smithy-build" % smithy4s.codegen.BuildInfo.smithyVersion,
       )
     },
+    version := tlBaseVersion.value, // this module is unpublished and a stable version helps smithy4s not regenerate code more often than needed
   )
   .enablePlugins(NoPublishPlugin)
 
@@ -92,7 +80,7 @@ lazy val `secure-config` = (project in file("."))
     smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
     Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
-    Compile / smithy4sAllDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
+    Compile / smithy4sInternalDependenciesAsJars += (`smithy4s-preprocessors` / Compile / packageBin).value,
     Compile / smithy4sSmithyLibrary := false,
     Compile / scalafix / unmanagedSources := (Compile / sources).value,
     scalafixOnCompile := true,
