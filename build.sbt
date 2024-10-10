@@ -77,6 +77,14 @@ lazy val `secure-config` = (project in file("."))
         "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
       )
     },
+    libraryDependencies ++= {
+      (scalaBinaryVersion.value) match {
+        case "2.13" =>
+          Seq("org.scala-lang" % "scala-compiler" % scalaVersion.value % Test)
+        case _ =>
+          Nil
+      }
+    },
     smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
     Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
