@@ -92,6 +92,17 @@ lazy val `secure-config` = (project in file("."))
     Compile / smithy4sSmithyLibrary := false,
     Compile / scalafix / unmanagedSources := (Compile / sources).value,
     scalafixOnCompile := true,
+    mimaBinaryIssueFilters ++= {
+      import com.typesafe.tools.mima.core.*
+
+      // exclusions in this package should be safe since everything in there should be package private
+      val shadedPackage = "com.dwolla.config.smithy_shaded.com.amazonaws.kms"
+
+      Seq(
+        ProblemFilters.exclude[FinalMethodProblem](s"$shadedPackage.KMSOperation#Transformed.transform"),
+        ProblemFilters.exclude[FinalMethodProblem](s"$shadedPackage.KMSOperation#reified.transform"),
+      )
+    }
   )
   .enablePlugins(
     Smithy4sCodegenPlugin,
