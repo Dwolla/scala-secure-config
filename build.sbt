@@ -77,6 +77,14 @@ lazy val `secure-config` = (project in file("."))
         "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
       )
     },
+    libraryDependencies ++= {
+      (scalaBinaryVersion.value) match {
+        case "2.13" =>
+          Seq("org.scala-lang" % "scala-compiler" % scalaVersion.value % Test)
+        case _ =>
+          Nil
+      }
+    },
     smithy4sAwsSpecs ++= Seq(AWS.kms),
     scalacOptions += "-Wconf:src=src_managed/.*:s",
     Compile / smithy4sModelTransformers += "com.dwolla.config.smithy.ShadeNamespace",
@@ -84,6 +92,17 @@ lazy val `secure-config` = (project in file("."))
     Compile / smithy4sSmithyLibrary := false,
     Compile / scalafix / unmanagedSources := (Compile / sources).value,
     scalafixOnCompile := true,
+    mimaBinaryIssueFilters ++= {
+      import com.typesafe.tools.mima.core.*
+
+      // exclusions in this package should be safe since everything in there should be package private
+      val shadedPackage = "com.dwolla.config.smithy_shaded.com.amazonaws.kms"
+
+      Seq(
+        ProblemFilters.exclude[FinalMethodProblem](s"$shadedPackage.KMSOperation#Transformed.transform"),
+        ProblemFilters.exclude[FinalMethodProblem](s"$shadedPackage.KMSOperation#reified.transform"),
+      )
+    }
   )
   .enablePlugins(
     Smithy4sCodegenPlugin,

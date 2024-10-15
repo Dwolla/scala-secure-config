@@ -1,21 +1,30 @@
 package bincompat
 
+import cats.syntax.all.*
 import munit.*
 
+import scala.reflect.runtime.currentMirror
+import scala.reflect.runtime.universe.*
+import scala.tools.reflect.ToolBox
+
 class ShadedGeneratedSmithySpec extends FunSuite {
+  private val toolbox = currentMirror.mkToolBox()
+
+  private def typecheck(input: String): Either[Throwable, Tree] =
+    for {
+      parsed <- Either.catchNonFatal(toolbox.parse(input))
+      typechecked <- Either.catchNonFatal(toolbox.typecheck(parsed))
+    } yield typechecked
+
   test("we don't have access to the generated KMS objects in their original package") {
-    assertNoDiff(compileErrors("""com.amazonaws.kms.KMS.id == smithy4s.ShapeId("com.amazonaws.kms", "TrentService")"""),
-      """error: object amazonaws is not a member of package com
-        |com.amazonaws.kms.KMS.id == smithy4s.ShapeId("com.amazonaws.kms", "TrentService")
-        |    ^
-        |""".stripMargin)
+    val typedchecked = typecheck("""com.amazonaws.kms.KMS.id""")
+
+    assertEquals(typedchecked.leftMap(_.getMessage), Left("reflective typecheck has failed: object id is not a member of package com.amazonaws.kms.KMS"))
   }
 
   test("we don't have access to the generated KMS objects in the shaded package") {
-    assertNoDiff(compileErrors("""assertEquals(com.dwolla.config.smithy_shaded.com.amazonaws.kms.KMS.id, smithy4s.ShapeId("com.dwolla.config.smithy_shaded.com.amazonaws.kms", "TrentService"))"""),
-      """error: value KMS in package kms cannot be accessed as a member of object com.dwolla.config.smithy_shaded.com.amazonaws.kms.package from class ShadedGeneratedSmithySpec in package bincompat
-        |assertEquals(com.dwolla.config.smithy_shaded.com.amazonaws.kms.KMS.id, smithy4s.ShapeId("com.dwolla.config.smithy_shaded.com.amazonaws.kms", "TrentService"))
-        |                                                               ^
-        |""".stripMargin)
+    val typedchecked = typecheck("""com.dwolla.config.smithy_shaded.com.amazonaws.kms.KMS.id""")
+
+    assertEquals(typedchecked.leftMap(_.getMessage), Left("reflective typecheck has failed: value KMS in package kms cannot be accessed as a member of object com.dwolla.config.smithy_shaded.com.amazonaws.kms.package from package <root>"))
   }
 }
