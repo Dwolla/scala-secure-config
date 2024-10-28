@@ -74,7 +74,7 @@ lazy val `secure-config` = (project in file("."))
         "org.scodec" %% "scodec-bits" % "1.2.1",
         "org.typelevel" %% "mouse" % "1.3.2",
         "org.scalameta" %% "munit" % "1.0.2" % Test,
-        "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
+        "org.http4s" %% "http4s-ember-client" % "0.23.29" % Test,
       )
     },
     libraryDependencies ++= {
