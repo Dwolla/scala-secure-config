@@ -67,7 +67,7 @@ lazy val `secure-config` = (project in file("."))
   .settings(
     libraryDependencies ++= {
       Seq(
-        "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.8",
+        "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.9",
         "io.monix" %% "newtypes-core" % "0.3.0",
         "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
         "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
