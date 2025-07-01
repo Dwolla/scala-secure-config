@@ -70,7 +70,7 @@ lazy val `secure-config` = (project in file("."))
         "io.monix" %% "newtypes-core" % "0.3.0",
         "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
         "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
-        "org.scodec" %% "scodec-bits" % "1.2.1",
+        "org.scodec" %% "scodec-bits" % "1.2.2",
         "org.typelevel" %% "mouse" % "1.3.2",
         "org.scalameta" %% "munit" % "1.1.1" % Test,
         "org.http4s" %% "http4s-ember-client" % "0.23.30" % Test,
