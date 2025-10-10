@@ -13,7 +13,7 @@ ThisBuild / developers := List(
   ),
 )
 ThisBuild / crossScalaVersions := Seq(
-  "2.13.16",
+  "2.13.17",
   "3.3.4",
 )
 ThisBuild / scalaVersion := crossScalaVersions.value.head
