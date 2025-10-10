@@ -13,8 +13,8 @@ ThisBuild / developers := List(
   ),
 )
 ThisBuild / crossScalaVersions := Seq(
-  "2.13.16",
-  "3.3.4",
+  "2.13.17",
+  "3.3.7",
 )
 ThisBuild / scalaVersion := crossScalaVersions.value.head
 ThisBuild / startYear := Option(2018)
