@@ -31,7 +31,7 @@ ThisBuild / mergifyStewardConfig ~= { _.map {
 lazy val `smithy4s-preprocessors` = project
   .in(file("smithy4s-preprocessors"))
   .settings(
-    scalaVersion := "2.12.20", // 2.12 to match what SBT uses
+    scalaVersion := "2.12.21", // 2.12 to match what SBT uses
     scalacOptions -= "-source:future",
     libraryDependencies ++= {
       Seq(
