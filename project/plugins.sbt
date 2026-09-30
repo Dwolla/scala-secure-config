@@ -1,5 +1,5 @@
 addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.8.7")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.8.7")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-mergify" % "0.8.7")
-addSbtPlugin("com.disneystreaming.smithy4s" % "smithy4s-sbt-codegen" % "0.18.58")
+addSbtPlugin("com.disneystreaming.smithy4s" % "smithy4s-sbt-codegen" % "0.19.13")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
